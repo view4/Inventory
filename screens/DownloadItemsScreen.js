@@ -13,7 +13,7 @@ const htmlStyle=
 			justify-content: flex-start;
 			padding-bottom: 7px;
 			position: relative;
-			height: 180px;
+			height: 18vh;
 		}
 		.image-container {
 			height: 180px;
@@ -42,6 +42,13 @@ const htmlStyle=
 		}
 		.cat-text{
 			font-weight: 700;
+		}
+
+		.items-page-container{
+			height: 80vh;
+			display: flex;
+			flex-direction: column; 
+			justify-content: space-between;
 		}
 	</style>`;
 
@@ -94,8 +101,17 @@ class DownloadItemsScreen extends React.Component{
     const {allItems} = this.state;
 
     const style = htmlStyle;
-    let body = "<body>"
-    for (let i =0; i < allItems.length; i++) {
+    let body = "<body>";
+    let container = `<div class="items-page-container">`;
+    let containerCounter = 0;
+    for (let i = 0; i < allItems.length; i++) {
+	console.log(allItems)
+        if (containerCounter >= 4){
+		containerCounter = 0;
+		container = container.concat("</div>");
+		body.concat(container)
+		
+	};
 	let itemHtml = `
 		<div class="item-container">
 			<div class="image-container">
@@ -112,8 +128,11 @@ class DownloadItemsScreen extends React.Component{
 				<span>Quantity:${allItems[i].quantity}  </span>
 			</div>
 		</div>`
-	body = body.concat(itemHtml);
+	container = container.concat(itemHtml);
+	
+	//body = body.concat(itemHtml);
     }  
+    body = body.concat(container).concat("</div>")
     body = body.concat("</body>");
 
 
@@ -122,6 +141,7 @@ class DownloadItemsScreen extends React.Component{
 		${style}
 		${body}
 		</html>`;
+   console.log(doc)
    return doc
   }
 

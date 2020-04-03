@@ -25,7 +25,6 @@ export default function BottomTabNavigator({ navigation, route }) {
   let tabBarVisible = false;
 
   return (
-    //<NavigationContainer>
     <BottomTab.Navigator initialRouteName={INITIAL_ROUTE_NAME}>
       <BottomTab.Screen
         name="Add Item"
@@ -34,7 +33,6 @@ export default function BottomTabNavigator({ navigation, route }) {
           title: 'Add new Item',
 	  labelPosition: "below-icon",
 	  tabBarIcon: ({focused}) => <Image source={addIcon} style={{height: 36, width: 36}}/>
-          //tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-add-circle-outline" />,
         }}
       />
       <BottomTab.Screen
@@ -44,7 +42,6 @@ export default function BottomTabNavigator({ navigation, route }) {
           title: 'Catalogue',
 	  labelPosition: "below-icon",
 	  tabBarIcon: ({focused}) => <Image source={catalogueIcon} style={{height: 36, width: 36}}/>
-          //tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="md-book" />,
         }}
       />
       <BottomTab.Screen
@@ -54,7 +51,6 @@ export default function BottomTabNavigator({ navigation, route }) {
           title: 'Export Items',
 	  labelPosition: "below-icon",
 	  tabBarIcon: ({focused}) => <Image source={downloadIcon} style={{height: 36, width: 36}}/>
-          //tabBarIcon: ({ focused }) => <TabBarIcon focused={focused} name="ios-cloud-download" />,
         }}
       />
       <BottomTab.Screen
@@ -78,7 +74,6 @@ export default function BottomTabNavigator({ navigation, route }) {
   );
 }
 
-//export default createAppContainer(Tabs)
 
 function getHeaderTitle(route) {
   const routeName = route.state?.routes[route.state.index]?.name ?? INITIAL_ROUTE_NAME;

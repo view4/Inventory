@@ -1,36 +1,42 @@
 import * as React from 'react';
 import { Image, Platform, StyleSheet, Text, TouchableOpacity, View, TextInput, ScrollView, Dimensions } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
-import Constants from 'expo-constants';
-import * as Permissions from 'expo-permissions';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import CustomModal from "../components/customModal"
 
+
+import CustomModal from "../components/customModal"
 import firebase from "../firebase";
 
+const deleteIcon = require("../assets/images/delete.png")
 const {height, width} = Dimensions.get("screen");
 
-const deleteIcon = require("../assets/images/delete.png")
 
 class DisplayItemScreen extends React.Component{
 
   state = {
-    displayDeleteModal: false
+    displayDeleteModal: false,
+    item: {
+		image: deleteIcon	
+	}
   };
+
+  componentDidMount(){
+    this.setState({item: this.props.route.params.item});
+  }
+
   handleItemDelete = () => {
     const { item } = this.props.route.params;
     const itemRef = firebase.database().ref("items/" +item.key);
 
     itemRef.remove();
 
-   this.setState({displayDeleteModal: false});
-   this.props.navigation.goBack()
+    this.setState({displayDeleteModal: false});
+    this.props.navigation.goBack()
   };
 
   render(){
-      const {image, title, description, quantity, salePrice, costPrice, category} = this.props.route.params.item;
+      const {image, title, description, quantity, salePrice, costPrice, category} = this.state.item;
     const { displayDeleteModal } = this.state;
 	console.log(this.props)
+	console.log(this.state)
     return(
       <View style={styles.container}>
         <View style={styles.headerContainer}>
@@ -47,7 +53,7 @@ class DisplayItemScreen extends React.Component{
 	  <View style={styles.addItemButton}>
 	    <TouchableOpacity
 	      style={styles.headerButton}
-	      onPress={()=> this.props.navigation.navigate("edit item", {isEdit: true, item: this.props.route.params.item})}> 
+	      onPress={()=> this.props.navigation.navigate("edit item", {isEdit: true, item: this.state.item})}> 
 	      <Text style={styles.headerText}>Edit</Text>
 	    </TouchableOpacity> 
 	  </View>
