@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {View, Image} from "react-native";
+import {View, Image, StyleSheet} from "react-native";
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 //import {  createAppContainer } from "@react-navigation"
@@ -13,9 +13,15 @@ import EditItemScreen from '../screens/editItemScreen';
 const BottomTab = createBottomTabNavigator();
 const INITIAL_ROUTE_NAME = 'Home';
 
-const addIcon = require("../assets/images/add.png");
-const downloadIcon = require("../assets/images/download.png");
-const catalogueIcon =require("../assets/images/catalogue.png");
+const inactivePlus = require("../assets/images/plus_inactive.png");
+const activePlus = require("../assets/images/plus_active.png");
+const inactiveHome =require("../assets/images/home_inactive.png");
+const activeHome = require("../assets/images/home_active.png");
+const inactivePrint = require("../assets/images/print_inactive.png");
+const activePrint =require("../assets/images/print_active.png");
+
+
+
 
 export default function BottomTabNavigator({ navigation, route }) {
   // Set the header title on the parent stack navigator depending on the
@@ -25,14 +31,16 @@ export default function BottomTabNavigator({ navigation, route }) {
   let tabBarVisible = false;
 
   return (
-    <BottomTab.Navigator initialRouteName={INITIAL_ROUTE_NAME}>
+    <BottomTab.Navigator style={styles.bottomBar} initialRouteName={INITIAL_ROUTE_NAME}>
       <BottomTab.Screen
         name="Add Item"
         component={AddOrEditItemScreen}
+        style={styles.tab}
         options={{
           title: 'Add new Item',
 	  labelPosition: "below-icon",
-	  tabBarIcon: ({focused}) => <Image source={addIcon} style={{height: 36, width: 36}}/>
+	  tabBarIcon: ({focused}) => <Image source={focused ? activePlus : inactivePlus} style={{height: 18, width: 18}}/>,
+          style: styles.tab
         }}
       />
       <BottomTab.Screen
@@ -41,7 +49,7 @@ export default function BottomTabNavigator({ navigation, route }) {
         options={{
           title: 'Catalogue',
 	  labelPosition: "below-icon",
-	  tabBarIcon: ({focused}) => <Image source={catalogueIcon} style={{height: 36, width: 36}}/>
+	  tabBarIcon: ({focused}) => <Image source={focused ? activeHome : inactiveHome} style={{height: 18, width: 18}}/>
         }}
       />
       <BottomTab.Screen
@@ -50,7 +58,7 @@ export default function BottomTabNavigator({ navigation, route }) {
         options={{
           title: 'Export Items',
 	  labelPosition: "below-icon",
-	  tabBarIcon: ({focused}) => <Image source={downloadIcon} style={{height: 36, width: 36}}/>
+	  tabBarIcon: ({focused}) => <Image source={focused ? activePrint : inactivePrint} style={{height: 18, width: 18}}/>
         }}
       />
       <BottomTab.Screen
@@ -91,3 +99,16 @@ function getHeaderTitle(route) {
       return 'Export all Items';
   }
 }
+
+
+
+const styles = StyleSheet.create({
+  bottomBar: {
+    backgroundColor: "#e3e6e8",
+  },
+  tab: {
+    backgroundColor: "red"
+  }
+
+
+});

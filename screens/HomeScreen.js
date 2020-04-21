@@ -1,11 +1,16 @@
 import * as React from 'react';
 import { Dimensions, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View, Image } from 'react-native';
+
 import { ScrollView } from 'react-native-gesture-handler';
+
+
 import CatalogueItem from "../components/CatalogueItem";
+
 import firebase from "../firebase";
+import colors from "../constants/Colors";
 
 const addIcon = require("../assets/images/add_green.png");
-const logo = require("../assets/images/logo.png");
+const logo = require("../assets/images/logo.jpg");
 
 const {height, width} = Dimensions.get("screen");
 
@@ -104,17 +109,21 @@ export default class HomeScreen extends React.Component{
 	  </View>
 	  <View style={styles.searchContainer}>
 	    <View style={styles.searchIconContainer}>
+		<Image 
+                   source={require("../assets/images/search_icon.svg")}
+                   style={styles.searchIcon}
+                 />
 	    </View>
 	    <TextInput
 	      placeholder="search"
 	      onChangeText={(text) => this.handleSearchInput(text) }
-	      style={[styles.searchInputField, !isSearch ? {textAlign: "center", fontWeight: "700"}: null]}
-	      placeholderTextColor={"#fff"}
+	      style={[styles.searchInputField, !isSearch ? {fontWeight: "700"}: null]}
+	      placeholderTextColor={colors.subtleGrey}
 	    />
 	  </View>
-	  <View style={styles.addItemButton}>
-	    <TouchableOpacity onPress={()=> this.props.navigation.navigate("Add Item")}> 
-	      <Image source={addIcon}  style={{height: 36, width: 36}}/>
+	  <View style={styles.addItemButtonContainer}>
+	    <TouchableOpacity style={styles.addItemButton} onPress={()=> this.props.navigation.navigate("Add Item")}> 
+	      <Text style={styles.addButtonText}>+</Text>
 	    </TouchableOpacity> 
 	  </View>
 	 </View>
@@ -169,9 +178,9 @@ const styles = StyleSheet.create({
   },
 
   headerContainer: {
-        backgroundColor: "navy",
-        marginBottom: 10,
-        padding: 7
+    backgroundColor: "#fff",//colors.themeColor,
+    marginBottom: 10,
+    padding: 7
   },
 
   headerRow: {
@@ -186,23 +195,62 @@ const styles = StyleSheet.create({
    color: "#fff"
   },
 
-  categoryButton: {
-    backgroundColor: "#d4d0d096",
-    padding: 7,
-    borderRadius: 7
+  addItemButton: {
+    backgroundColor: colors.theme,
+    height: 36,
+    width: 36,
+    borderRadius: 36,
+    justifyContent: "center",
+    alignItems: "center"
   },
-  searchInputField: {
-     backgroundColor: "#d4d0d096",
-     padding: 7,
-     borderRadius: 18,
-     width: width / 2,
-     
+
+  addButtonText: {
+    color: "#fff",
+    fontSize: 18
+  },
+
+  categoryButton: {
+    backgroundColor: colors.subtleGrey,
+    padding: 7,
+    borderRadius: 7,
+    width: (width / 4) - 7,
+    textAlign: "center"
+
   },
 
   selectedFilterItem: {
     borderWidth: 3,
-    borderColor: "#fff"
+    borderColor: "#fff",
+    backgroundColor: colors.theme
   },
+
+  // Search
+  searchContainer: {
+    backgroundColor: "#fff",
+    flexDirection: "row",
+    alignItems: "center",
+    paddingLeft: 10,
+    borderColor: colors.theme,
+    borderWidth: 1,
+    borderRadius: 3,
+    height: 36
+  },
+ 
+  searchInputField: {
+    paddingLeft: 7,
+    paddingRight: 7,
+    //width: width / 2,
+    width: "90%",
+    textAlign: "left"
+
+  },
+
+  searchIcon: {
+    height: 10,
+    width: 10,
+  },
+
+
 
   //Catalogue
   

@@ -45,10 +45,10 @@ const htmlStyle=
 		}
 
 		.items-page-container{
-			height: 80vh;
+			height: 100vh;
 			display: flex;
 			flex-direction: column; 
-			justify-content: space-between;
+			justify-content: space-around;
 		}
 	</style>`;
 
@@ -110,7 +110,7 @@ class DownloadItemsScreen extends React.Component{
 		containerCounter = 0;
 		container = container.concat("</div>");
 		body.concat(container)
-		
+                container = `<div class="items-page-container">`;	
 	};
 	let itemHtml = `
 		<div class="item-container">
@@ -138,8 +138,8 @@ class DownloadItemsScreen extends React.Component{
 
 
    const doc = `<html>
-		${style}
-		${body}
+			${style}
+			${body}
 		</html>`;
    console.log(doc)
    return doc

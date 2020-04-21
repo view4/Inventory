@@ -2,7 +2,10 @@ import * as React from 'react';
 import { Image, Platform, StyleSheet, Text, TouchableOpacity, View, TextInput, ScrollView, Dimensions } from 'react-native';
 
 
-import CustomModal from "../components/customModal"
+import CustomModal from "../components/customModal";
+
+import colors from "../constants/Colors";
+
 import firebase from "../firebase";
 
 const deleteIcon = require("../assets/images/delete.png")
@@ -18,7 +21,7 @@ class DisplayItemScreen extends React.Component{
 	}
   };
 
-  componentDidMount(){
+  componentWillMount(){
     this.setState({item: this.props.route.params.item});
   }
 
@@ -44,6 +47,10 @@ class DisplayItemScreen extends React.Component{
 	    <TouchableOpacity
 	      style={styles.headerButton}
 	      onPress={() => this.props.navigation.goBack()}>
+	      <Image 
+ 	        source={require("../assets/images/back.svg")}
+                style={styles.backIcon}
+              />
 	      <Text style={styles.headerText}>Back</Text>
             </TouchableOpacity>
 	  </View>
@@ -138,25 +145,37 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     width: width,
     justifyContent: "space-around",
-    backgroundColor: "navy",
+    //backgroundColor: colors.theme,
     padding: 10,
     marginBottom: 18,
     position: "relative"
   },
-  headerText: {
-    color: "#fff"
+
+  backIcon: {
+    //opacity: 1,
+    backgroundColor: "aliceblue",
+    height: 7,
+    width: 7
   },
+
+  headerText: {
+    color: colors.theme
+  },
+
   headerButton: {
     padding: 10
   },
+
   imageContainer: {
     marginBottom: 36,
     width: width,
-   justifyContent: "center",
-   flexDirection: "row"
+    justifyContent: "center",
+    flexDirection: "row"
   },
+
   inputContainer: {
-    margin: "7px;"
+    margin: 7,
+    backgroundColor: "#fff"
   },
 
   itemDetailsContainer: {

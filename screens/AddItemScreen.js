@@ -7,6 +7,7 @@ import { Dimensions, Image, Modal, Picker, ScrollView, StyleSheet, Text, TextInp
 import CustomModal from "../components/customModal";
 import firebase from "../firebase";
 
+import colors from "../constants/Colors";
 
 const {height, width} = Dimensions.get("screen");
 
@@ -159,7 +160,7 @@ class AddOrEditItemScreen extends React.Component{
 						{ !image ? (<View style={styles.imageContainer}>
 						  <Image 
 						    style={styles.imageIcon}
-						    source={require("../assets/images/image.png")}
+						    source={require("../assets/images/image.svg")}
 						   />
 						</View> ) : (
 						<View>
@@ -287,7 +288,7 @@ const styles = StyleSheet.create({
     alignItems: "center"
   },
   headerContainer: {
-    backgroundColor: "navy",
+    backgroundColor: colors.theme,
     flexDirection: "row",
     width: "100%",
     justifyContent: "space-around",
@@ -338,28 +339,29 @@ const styles = StyleSheet.create({
     backgroundColor: "#000",
     borderRadius: 18
   },
-  imageIcon:{
+  imageIcon: {
     height: 100,
-    width: 100
+    width: 100,
+    opacity: 1,
+    backgroundColor: "rgb(240, 248, 255)",
   },
 
   pickerModalContainer: {
-	height: height,
-	width: width,
-	justifyContent: "center",
-	alignItems: "center",
-	position: "absolute",
-	top: 0,
-	backgroundColor: "rgba(0,0,0,0.7)"
-
+    height: height,
+    width: width,
+    justifyContent: "center",
+    alignItems: "center",
+    position: "absolute",
+    top: 0,
+    backgroundColor: "rgba(0,0,0,0.7)",
    },
 
-   pickerModalContentContainer: {
-		padding: 18,
-		backgroundColor: "#fff",
-		borderWidth: 1,
-		borderRadius: 18,
-   },
+ pickerModalContentContainer: {
+   padding: 18,
+   backgroundColor: "#fff",
+   borderWidth: 1,
+   borderRadius: 18,
+ },
 
   //Modal
 
