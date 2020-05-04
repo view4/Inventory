@@ -214,7 +214,9 @@ const styles = StyleSheet.create({
     padding: 7,
     borderRadius: 7,
     width: (width / 4) - 7,
-    textAlign: "center"
+    flexDirection: "row",
+    justifyContent: "center"
+    //textAlign: "center"
 
   },
 
@@ -239,8 +241,8 @@ const styles = StyleSheet.create({
   searchInputField: {
     paddingLeft: 7,
     paddingRight: 7,
-    //width: width / 2,
-    width: "90%",
+    width: (width / 2) - 10,
+    //width: 126,
     textAlign: "left"
 
   },

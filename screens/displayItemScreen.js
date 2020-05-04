@@ -3,12 +3,14 @@ import { Image, Platform, StyleSheet, Text, TouchableOpacity, View, TextInput, S
 
 
 import CustomModal from "../components/customModal";
+import Label from "../components/Label";
 
 import colors from "../constants/Colors";
 
 import firebase from "../firebase";
 
-const deleteIcon = require("../assets/images/delete.png")
+const deleteIcon = require("../assets/images/delete.png");
+const editIcon = require("../assets/images/edit.png")
 const {height, width} = Dimensions.get("screen");
 
 
@@ -17,12 +19,18 @@ class DisplayItemScreen extends React.Component{
   state = {
     displayDeleteModal: false,
     item: {
-		image: deleteIcon	
+		//image: deleteIcon	
 	}
   };
 
   componentWillMount(){
     this.setState({item: this.props.route.params.item});
+    
+  }
+  componentDidUpdate(prevProps){
+    if(prevProps.route.params.item.key !== this.props.route.params.item.key){
+      this.setState({item: this.props.route.params.item});
+    }
   }
 
   handleItemDelete = () => {
@@ -36,23 +44,28 @@ class DisplayItemScreen extends React.Component{
   };
 
   render(){
-      const {image, title, description, quantity, salePrice, costPrice, category} = this.state.item;
+      const {image, title, description, quantity, salePrice, costPrice, category, material, dimensions, sku} = this.state.item;
     const { displayDeleteModal } = this.state;
 	console.log(this.props)
 	console.log(this.state)
     return(
       <View style={styles.container}>
-        <View style={styles.headerContainer}>
+        <View style={styles.backContainer}>
+	  <TouchableOpacity
+	    style={{flexDirection: "row"}}
+	    onPress={() => this.props.navigation.goBack()} 
+          >
+	    <Image 
+ 	      source={require("../assets/images/back.svg")}
+              style={styles.backIcon}
+            />
+	    <Text style={styles.headerText}>Back</Text>
+          </TouchableOpacity>
+
+        </View>
+        {/*<View style={styles.headerContainer}>
 	  <View style={styles.logoContainer}>
-	    <TouchableOpacity
-	      style={styles.headerButton}
-	      onPress={() => this.props.navigation.goBack()}>
-	      <Image 
- 	        source={require("../assets/images/back.svg")}
-                style={styles.backIcon}
-              />
-	      <Text style={styles.headerText}>Back</Text>
-            </TouchableOpacity>
+
 	  </View>
 	  <View style={styles.searchContainer}>
 
@@ -64,7 +77,7 @@ class DisplayItemScreen extends React.Component{
 	      <Text style={styles.headerText}>Edit</Text>
 	    </TouchableOpacity> 
 	  </View>
-	 </View>
+	 </View>*/}
       
 	<ScrollView>
 	  <View style={styles.imageContainer}>
@@ -74,47 +87,23 @@ class DisplayItemScreen extends React.Component{
              />
 	  </View>
 	  <View style={styles.itemDetailsContainer}>
-		  <View style={styles.inputContainer}>
-		    <Text style={styles.title}>
-			Title:
-		    </Text>
-		    <Text style={styles.itemInfo}>
-			{title}
-		    </Text>
-		  </View>
-		  <View style={styles.inputContainer}>
-		    <Text style={styles.title}>Description:</Text>
-		    <Text style={styles.itemInfo}>
-		     {description}
-		    </Text>
-		  </View>
-		  <View style={styles.inputContainer}>
-		    <Text style={styles.title}>Category:</Text>
-		    <Text style={styles.itemInfo}>
-			{category}
-		    </Text>
-		  </View>
-		  <View style={styles.inputContainer}>
-		    <Text style={styles.title}>Quantity: </Text>
-		    <Text style={styles.itemInfo}>
-			{quantity}
-		    </Text>
-		  </View>
-		  <View style={styles.inputContainer}>
-		    <Text style={styles.title}>Cost:</Text>
-		    <Text style={styles.itemInfo}>
-			£{costPrice}
-		    </Text>
-		  </View>
-		  <View style={styles.inputContainer}>
-		    <Text style={styles.title}>Sale Price:</Text>
-		    <Text style={styles.itemInfo}>
-		       £{salePrice}
-		    </Text>
-		  </View>
-		 <TouchableOpacity onPress={() => this.setState({displayDeleteModal: true})}>
+                  <Text style={styles.skuLabel}>SKU: {}</Text>
+		  <Label title={"Product Name"} text={title} />
+		  <Label title={"Product Name"} text={category} />
+		  <Label title={"Product Name"} text={material} />
+		  <Label title={"Product Name"} text={dimensions} />
+		  <Label title={"Product Name"} text={"£" + costPrice} />
+		  <Label title={"Product Name"} text={description} />
+		  <Label title={"Product Name"} text={quantity} />
+
+                 <View style={{flexDirection: "row"}}>
+		   <TouchableOpacity onPress={() => this.setState({displayDeleteModal: true})}>
 		    <Image source={deleteIcon} style={{height: 36, width: 36}}/>
-		 </TouchableOpacity>
+		   </TouchableOpacity>
+		   <TouchableOpacity onPress={()=> this.props.navigation.navigate("edit item", {isEdit: true, item: this.state.item})}>
+		    <Image source={editIcon} style={{height: 18, width: 18}}/>
+		   </TouchableOpacity>
+                 </View>
 	  </View>
 	</ScrollView>
         {
@@ -127,7 +116,7 @@ class DisplayItemScreen extends React.Component{
 				  secondButtonFunctionality={() => this.setState({displayDeleteModal: false})}
 				  />
 	}
-	</View>
+      </View>
   )}
 };
 
@@ -140,6 +129,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'aliceblue',
     alignItems: "center"
+  },
+  backContainer: {
+    //alignSelf: "flex-start"
+    width: "90%"
+
   },
   headerContainer: {
     flexDirection: "row",
@@ -173,14 +167,21 @@ const styles = StyleSheet.create({
     flexDirection: "row"
   },
 
-  inputContainer: {
+
+  skuLabel: {
+    fontWeight: "700",
+    fontSize: 18,
+    padding: 10,
     margin: 7,
-    backgroundColor: "#fff"
+    //alignSelf: "flex-start",
+    //paddingLeft: 36
+    width: "90%"
   },
 
   itemDetailsContainer: {
     width: width,
-    alignItems: "flex-start"
+    alignItems: "center"
+    
   },
   title: {
     fontSize: 18,

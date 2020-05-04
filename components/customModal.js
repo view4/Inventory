@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, Dimensions, Modal } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View, Dimensions, Modal, TouchableHighlight } from 'react-native'
 
 const {height, width} = Dimensions.get("screen");
 
@@ -7,20 +7,24 @@ const CustomModal = ({visible, text, buttonText, buttonFunctionality, customButt
 
   return(
     <Modal visible={visible} style={styles.modalContainer}>
-      <View style={styles.modalContent}>
-	<Text>{text} </Text>
-	<View style={styles.buttonContainer}>
-	  {
-            secondButtonText && (
-	      <TouchableOpacity style={[styles.secondButtonStyle, styles.buttonStyle]}onPress={() => secondButtonFunctionality()}>
-	        <Text>{secondButtonText}</Text>
-              </TouchableOpacity>)
-          }
-	  <TouchableOpacity style={[styles.buttonStyle, customButtonStyle ? customButtonStyle : null ]} onPress={() => buttonFunctionality()}>
-	    <Text>{buttonText}</Text>
-          </TouchableOpacity>
-	</View>
-      </View>		
+      <TouchableOpacity style={styles.modalBackground}>
+        <TouchableHighlight style={styles.modalContent}>
+          <View>
+	    <Text>{text} </Text>
+	    <View style={styles.buttonContainer}>
+	      {
+                secondButtonText && (
+	          <TouchableOpacity style={[styles.secondButtonStyle, styles.buttonStyle]}onPress={() => secondButtonFunctionality()}>
+	            <Text>{secondButtonText}</Text>
+                  </TouchableOpacity>)
+              }
+	      <TouchableOpacity style={[styles.buttonStyle, customButtonStyle ? customButtonStyle : null ]} onPress={() => buttonFunctionality()}>
+	        <Text>{buttonText}</Text>
+              </TouchableOpacity>
+	    </View>
+          </View>
+        </TouchableHighlight>	
+      </TouchableOpacity>	
     </Modal>
   )
 };
@@ -29,18 +33,26 @@ const styles= StyleSheet.create({
   modalContainer: {
     height: height, 
     width: width,
-    backgroundColor: "rgba(0,0,0,0.7)",
+    backgroundColor: "#bababa6e",
     justifyContent: "center",
     alignItems: "center",
-    position: "relative",
+    position: "absolute",
     top: 0,
-    flex: 1
+    flex: 1,
+    display: "flex"
+  },
+
+  modalBackground: {
+    height: height,
+    width: width,
+    justifyContent: "center",
+    alignItems: "center"
   },
 
   modalContent: {
     height: height/2,
     width: width /2,
-    marginTop: 54,
+    //marginTop: 54,
     backgroundColor: "#fff",
     borderRadius: 7,
     padding: 18,
@@ -48,8 +60,8 @@ const styles= StyleSheet.create({
     alignItems: "center",
     borderWidth: 1,
     borderColor: "grey",
-    marginRight: "auto",
-    marginLeft: "auto"
+    //marginRight: "auto",
+    //marginLeft: "auto"
   },
 
   buttonContainer: {
