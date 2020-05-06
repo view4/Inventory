@@ -1,7 +1,10 @@
 import * as Print from 'expo-print';
 import * as React from 'react';
 import { Button, StyleSheet, View } from 'react-native';
+
 import firebase from "../firebase";
+
+
 
 
 const htmlStyle= 
@@ -54,7 +57,7 @@ const htmlStyle=
 
 class DownloadItemsScreen extends React.Component{
   state={
-    allItems: [],
+    allItems: []
   }
 
   componentDidMount(){
@@ -106,7 +109,7 @@ class DownloadItemsScreen extends React.Component{
     let containerCounter = 0;
     for (let i = 0; i < allItems.length; i++) {
 	console.log(allItems)
-        if (containerCounter >= 4){
+        if (containerCounter >= 3){
 		containerCounter = 0;
 		container = container.concat("</div>");
 		body.concat(container)
@@ -148,7 +151,7 @@ class DownloadItemsScreen extends React.Component{
   render(){
 	return (
 	  <View style={styles.container}>
-		<Button style={styles.downloadButton} title="Press to download" onPress={this.handleDownload}></Button>
+		<Button style={styles.downloadButton} title="Press to download" onPress={this.setState({download: true})/*this.handleDownload*/}></Button>
 	  </View>
    )
  }

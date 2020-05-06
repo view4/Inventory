@@ -1,12 +1,13 @@
-import Constants from 'expo-constants';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
 import * as React from 'react';
 import { Dimensions, Image, Modal, Picker, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Platform } from "react-native";
 
 import CustomModal from "../components/customModal";
-import firebase from "../firebase";
+import Header from "../components/Header";
+import MyImagePicker from "../components/ImagePicker";
 
+import firebase from "../firebase";
 import colors from "../constants/Colors";
 
 const {height, width} = Dimensions.get("screen");
@@ -210,15 +211,14 @@ class AddOrEditItemScreen extends React.Component{
   };
 
   handleNewCategoryAddition = () => {
-    console.log("Add cat")
+
     const {newCategory, categories } = this.state;
-    console.log(categories)
-    console.log(newCategory)
+
 
     const categoriesRef = firebase.database().ref("categories");
-    categories.push(newCategory);
-    console.log(categories);
-    categoriesRef.set(categories);
+    const newCategoriesArray = categories.push(newCategory);
+    categoriesRef.set(newCategoriesArray);
+    console.log(newCategoriesArray)
 
     this.setState({categories, displayConfirmCategoryAdd: false})
     return alert("New category added successfully")
@@ -230,8 +230,6 @@ class AddOrEditItemScreen extends React.Component{
 	render(){
 		const { displayConfirmationModal, displayPickerModal, image, displayErrorMessage, isEdit, title, description, quantity, costPrice, salePrice, category, errorText, displayCameraOptions, material, dimensions, sku, displayConfirmCategoryAdd, newCategory, categories } = this.state;
 		console.log(this.state)
-                console.log("Categories!!!!")
-                console.log(categories)
 
                 let pickerOptions =  categories.map( (cat, key) => {
 		  return <Picker.Item label={cat} value={cat} key={key} />
@@ -239,249 +237,160 @@ class AddOrEditItemScreen extends React.Component{
                 console.log(pickerOptions)
 		return(
 			<View style={styles.container}>
-				<View style={styles.headerContainer}>
-				  <View style={styles.logoContainer}>
-				    <TouchableOpacity
-				     style={styles.headerButton}
-				     onPress={() => {
-					this.resetState()
-					this.props.navigation.goBack()
-				     }}>
-				      <Text style={[styles.headerText]}>Cancel</Text>
-				    </TouchableOpacity>
-				  </View>
-				  <View style={styles.pageTitleContainer}>
-				    <Text style={[styles.headerText]}>{isEdit ? "Edit" : "Add"} Item</Text>
-				  </View>
-				  <View style={styles.addItemButton}>
-				    <TouchableOpacity
-				      onPress={this.addItem}
-				      style={styles.headerButton}
- 				    > 
-				      <Text style={[styles.headerText]}>Done</Text>
-				    </TouchableOpacity> 
-				  </View>
-				 </View>
+                          <Header 
+                            headerText={(isEdit ? "Edit" : "Add") + " item" }
+                            leftSectText={"cancel"}
+                            leftSectFunctionality={() => {
+		              this.resetState()
+		              this.props.navigation.goBack()
+                              }
+                            }
+                            rightSectText={"done"}
+                            rightSectFunctionality={this.addItem}
+                          />
 
-                                <View style={styles.skuContainer}>
-				  <Text style={styles.skuText}>SKU: #{sku}</Text>
+                          <View style={styles.skuContainer}>
+	                    <Text style={styles.skuText}>SKU: #{sku}</Text>
+	                  </View>
+
+	                  <ScrollView contentContainerStyle={styles.scrollContainer}>
+                            <MyImagePicker
+                              image={image} 
+                              setDisplayCameraOptions={() => this.setState({displayCameraOptions: true})}
+                            />
+
+			    <View style={styles.inputContainer}>
+			      <TextInput 
+			        style={styles.textInput}
+		       	        placeholder={"Product Name"}
+			   	onChangeText={text => this.setState({title:text})}
+				value={title}
+			      />
+
+			    </View>
+			    <View style={styles.inputContainer}>
+		              <TextInput
+			        style={styles.textInput} 
+				placeholder={"Material"}
+	   			onChangeText={text => this.setState({material:text})}
+				value={material}
+		              />
+			    </View>
+			    <View style={styles.inputContainer}>
+			      <TextInput
+			        style={styles.textInput} 
+			        placeholder={"Dimensions"}
+			  	onChangeText={text => this.setState({dimensions:text})}
+		                value={dimensions}
+			      />
+		            </View>
+		            <View style={styles.inputContainer}>
+			      <TextInput
+			        style={styles.textInput} 
+				placeholder={"Quantity"}
+			   	onChangeText={text => this.setState({quantity:text})}
+				value={quantity}
+			      />
+			    </View>
+                            <View style={styles.pricesContainer}>
+			      <View>
+				<View style={[styles.inputContainer, styles.priceInput]}>
+				  <TextInput 
+				    style={styles.textInput} 
+				    placeholder={"Cost Price"} 
+				    onChangeText={text => this.setState({costPrice:text})}
+				    value={costPrice}
+				  />
 				</View>
-				<ScrollView contentContainerStyle={styles.scrollContainer}>
+				<View style={[styles.inputContainer, styles.priceInput]}>
+				  <TextInput 
+				    style={styles.textInput} 
+				    placeholder={"Selling Price"} 
+				    onChangeText={text => this.setState({salePrice:text})}
+				    value={salePrice}
+				  />
+				</View>
+			      </View>
+			      <View style={styles.markupContainer}>
+				<Text style={styles.markupText}> Markup </Text>
+				<Text> + </Text>
+                                <Text> 
+                                  { salePrice && costPrice && ((salePrice-costPrice)/costPrice) * 100}
+                                  %
+                                </Text>
+			      </View>
+			    </View>
+			    <View style={styles.inputContainer}>
+			      <TextInput
+			        style={styles.textInput} 
+				placeholder={"History/Notes"}
+			   	onChangeText={text => this.setState({description:text})}
+			        value={description}
+			      />
+			    </View>
+			  </ScrollView>
+			{displayErrorMessage && (
+				<CustomModal
+				  visible={displayErrorMessage} 
+				  text={errorText}
+				  buttonText={"Ok"}
+				  buttonFunctionality={() => this.setState({displayErrorMessage: false})}
+				/>
+			)}
 
-				  <View style={styles.addImageContainer}>
-					<TouchableOpacity onPress={() => this.setState({displayCameraOptions: true})}>
-						{ !image ? (<View style={styles.imageContainer}>
-						  <Image 
-						    style={styles.imageIcon}
-						    source={require("../assets/images/image.png")}
-						   />
-						</View> ) : (
-						<View>
-						  <Image style={{height: 100, width: 100}} source={{uri: image}} />
-						</View>)
-						}
-						<Text> {!image ? "Add an" : "Change "} image </Text>
-					</TouchableOpacity>
-				  </View>
+			{displayConfirmCategoryAdd && (
+				<CustomModal
+				  visible={displayConfirmCategoryAdd} 
+				  text={`Are you sure you want to add ${newCategory} as a new category`}
+				  buttonText={"yes"}
+				  buttonFunctionality={() => this.handleNewCategoryAddition()}
+				  secondButtonText={"cancel"}
+				  secondButtonFunctionality={() => this.setState({displayConfirmCategoryAdd: false})}
+				/>
+			)}
+			{
+				displayConfirmationModal && (
+				  <CustomModal
+				    visible={displayConfirmationModal}
+				    text={isEdit ? "edit is confirmed": "Item has been added"}
+				    buttonText={!isEdit ? "add another" : "okay"}
+				    secondButtonText={!isEdit ? "okay" : null}
+				    buttonFunctionality={!isEdit ? (
+					() => {
+					  this.resetState()
+					  this.setState({displayConfirmationModal: false})
+					}) : (
+					  () => {
+					    this.setState({displayConfirmationModal:false})
+					    this.navigateHome()
+					  })
+				        }
+				    secondButtonFunctionality={!isEdit ? (
+					() => {
+					  this.setState({displayConfirmationModal:false})
+					  this.navigateHome();
+					}): null}
+				   />)
+			}
 
-					<View style={styles.inputContainer}>
-						<TextInput 
-						  style={styles.textInput}
-						  placeholder={"Product Name"}
-			   			  onChangeText={text => this.setState({title:text})}
-						  value={title}
-						/>
-					</View>
+		      {
+			displayCameraOptions && <CustomModal
+			  visible={displayCameraOptions}
+			  text={"Would you like to choose an image from the gallery or take a new one with your camera"}
+			  buttonText={"Gallery"}
+			  buttonFunctionality={() => 
+			    Constants.platform.IOS ? this.getPermissionsAsync()
+			     .then(this._pickImage()) :this._pickImage()
+			  }
+			  secondButtonText={"camera"}
+			  secondButtonFunctionality={()=> this.getCameraPermissionsAsync()
+			    .then(this._takeImage())
+			  }
+			/>
+		      }
+		</View>
 
-					{/*<View style={styles.inputContainer}>
-						<TextInput
-						  style={styles.textInput} 
-						  placeholder={"History/Notes"}
-			   			  onChangeText={text => this.setState({description:text})}
-						  value={description}
-						/>
-					</View>*/}
-				      { categories.length && (
-                                        <View style={{width: "100%", flexDirection: "row", justifyContent: "center"}}>
-						{ category !== "Add" ? (<View style={styles.inputContainer}>
-							{Platform.OS !== "ios" ? (
-								<Picker note selectedValue={category} style={styles.pickerStyle} onValueChange={itemValue => this.setState({category: itemValue})}>
-									<Picker.Item value="" label="Please pick a category"/>
-									{/*<Picker.Item label="&&&" value="Rings" />
-									<Picker.Item label="Earrings" value="Earrrings" />
-									<Picker.Item label="Necklaces" value="Necklaces" />
-									<Picker.Item label="Bracelets" value="Bracelets" />*/}
-		                                                        {
-									 pickerOptions
-		                                                        }
-									<Picker.Item label="Add new category ..." value="Add" />
-
-								</Picker> ) : (
-								<TouchableOpacity onPress={()=> this.setState({displayPickerModal: true})}>
-								  <Text> {category.length ? category: "Set Category:"}</Text>
-								</TouchableOpacity> 
-							)}
-						</View>) :(
-							<View style={[styles.inputContainer, {flexDirection: "column"}]}>
-								<TextInput
-							    	  style={styles.textInput} 
-								  placeholder={"Please add a new category"}
-				   			          //onChangeText={text => this.setState({:text})}
-								  onBlur={e => this.setState({
-								    newCategory: e.target.value,
-		                                                    displayConfirmCategoryAdd: true
-		                                                  })}
-								  //value={material}
-								/>
-		                                                
-							</View> 
-		                                )}
-                                       </View>
-				    )}
-
-					<View style={styles.inputContainer}>
-						<TextInput
-						  style={styles.textInput} 
-						  placeholder={"Material"}
-			   			  onChangeText={text => this.setState({material:text})}
-						  value={material}
-						/>
-					</View>
-
-					<View style={styles.inputContainer}>
-						<TextInput
-						  style={styles.textInput} 
-						  placeholder={"Dimensions"}
-			   			  onChangeText={text => this.setState({dimensions:text})}
-						  value={dimensions}
-						/>
-					</View>
-
-					<View style={styles.inputContainer}>
-						<TextInput
-						  style={styles.textInput} 
-						  placeholder={"Quantity"}
-			   			  onChangeText={text => this.setState({quantity:text})}
-						  value={quantity}
-						/>
-					</View>
-           
-					<View style={styles.pricesContainer}>
-					  <View>
-						<View style={[styles.inputContainer, styles.priceInput]}>
-							<TextInput 
-							  style={styles.textInput} 
-							  placeholder={"Cost Price"} 
-				   			  onChangeText={text => this.setState({costPrice:text})}
-							  value={costPrice}
-							/>
-						</View>
-						<View style={[styles.inputContainer, styles.priceInput]}>
-							<TextInput 
-							  style={styles.textInput} 
-							  placeholder={"Selling Price"} 
-				   			  onChangeText={text => this.setState({salePrice:text})}
-							  value={salePrice}
-							/>
-						</View>
-					  </View>
-					  <View style={styles.markupContainer}>
-						<Text style={styles.markupText}> Markup </Text>
-						<Text>+ </Text>
-                                                <Text> {salePrice && costPrice && ((salePrice-costPrice)/costPrice) * 100}%</Text>
-					  </View>
-					</View>
-					<View style={styles.inputContainer}>
-						<TextInput
-						  style={styles.textInput} 
-						  placeholder={"History/Notes"}
-			   			  onChangeText={text => this.setState({description:text})}
-						  value={description}
-						/>
-					</View>
-				</ScrollView>
-				{
-				Platform.OS ==="ios" && displayPickerModal && (
-					<Modal visible={displayPickerModal} style={styles.pickerModalContainer}>
-						<View style={styles.pickerModalContentContainer}>
-							<Picker selectedValue={category} style={styles.pickerStyle} onValueChange={itemValue => this.setState({category: itemValue, displayPickerModal: false})}>
-								<Picker.Item value="" label="Please pick a category"/>
-								/*<Picker.Item label="Rings" value="Rings" />
-								<Picker.Item label="Earrings" value="Earrrings" />
-								<Picker.Item label="Necklaces" value="Necklaces" />
-								<Picker.Item label="Bracelets" value="Bracelets" />*/
-                                                                {
-								  pickerOptions
-                                                                }
-								<Picker.Item label="Add new category ..." value="Add" />
-							</Picker>
-						</View>
-					</Modal>)
-
-				}
-				{displayErrorMessage && (
-					<CustomModal
-   					  visible={displayErrorMessage} 
-					  text={errorText}
-					  buttonText={"Ok"}
-					  buttonFunctionality={() => this.setState({displayErrorMessage: false})}
-					/>
-				)}
-
-				{displayConfirmCategoryAdd && (
-					<CustomModal
-   					  visible={displayConfirmCategoryAdd} 
-					  text={`Are you sure you want to add ${newCategory} as a new category`}
-					  buttonText={"yes"}
-					  buttonFunctionality={() => this.handleNewCategoryAddition()}
-					  secondButtonText={"cancel"}
-					  secondButtonFunctionality={() => this.setState({displayConfirmCategoryAdd: false})}
-					/>
-				)}
-				{
-					displayConfirmationModal && (
-					  <CustomModal
-					    visible={displayConfirmationModal}
-					    text={isEdit ? "edit is confirmed": "Item has been added"}
-					    buttonText={!isEdit ? "add another" : "okay"}
-					    secondButtonText={!isEdit ? "okay" : null}
-					    buttonFunctionality={!isEdit ? (
-						() => {
-						  this.resetState()
-						  this.setState({displayConfirmationModal: false})
-						}) : (
-						  () => {
-						    this.setState({displayConfirmationModal:false})
-						    this.navigateHome()
-						  })
-					        }
-					    secondButtonFunctionality={!isEdit ? (
-						() => {
-						  this.setState({displayConfirmationModal:false})
-						  this.navigateHome();
-						}): null}
-					   />)
-				}
-
-				{
-					displayCameraOptions && <CustomModal
-                                          visible={displayCameraOptions}
-                                          text={"Would you like to choose an image from the gallery or take a new one with your camera"}
-                                          buttonText={"Gallery"}
-                                          buttonFunctionality={() => 
-                                            Constants.platform.IOS ?this.getPermissionsAsync()
-                                             .then(this._pickImage()) : this._pickImage()
-                                          }
-                                          secondButtonText={"camera"}
-                                          secondButtonFunctionality={()=> this.getCameraPermissionsAsync()
-                                            .then(this._takeImage())
-                                          }
-                                        />
-				
-				}
-			</View>
-
-		)
+	  )
 	}
 };
 
@@ -490,28 +399,7 @@ export default AddOrEditItemScreen;
 
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'aliceblue',
-    alignItems: "center"
-  },
-  headerContainer: {
-    backgroundColor: colors.theme,
-    flexDirection: "row",
-    width: "100%",
-    justifyContent: "space-around",
-    marginBottom: 18,
-    padding: 10,
-    alignItems: "center"
-  },
 
-  headerText: {
-    color: "#fff"
-  },
-
-  headerButton: {
-    padding: 10
-  },
   // SKU container
 
   skuContainer: {
@@ -529,14 +417,15 @@ const styles = StyleSheet.create({
     width: width,
     justifyContent: "center",
     alignItems: "center", 
-    marginTop: 10
+    marginTop: 10, 
+    position: "static"
   },
   
   inputContainer: {
     margin: 7,
     padding: 7,
     width: "72%",
-    backgroundColor: "#fff"//"#9e9e9e4d"
+    backgroundColor: "#fff"
   },
 
   inputPlaceholderStyle: {
@@ -555,26 +444,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     width: "72%",
     paddingLeft: 0
-    //justifyContent: "center"
   },
 
   priceInput: {
     width: width / 2
   },
-  // Image 
-  addImageContainer: {
-    padding: 10
-  },
-  imageContainer: {
-    backgroundColor: "#000",
-    borderRadius: 18
-  },
-  imageIcon: {
-    height: 100,
-    width: 100,
-    opacity: 1,
-    backgroundColor: "rgb(240, 248, 255)",
-  },
+
 
   pickerModalContainer: {
     height: height,
@@ -592,15 +467,56 @@ const styles = StyleSheet.create({
    borderWidth: 1,
    borderRadius: 18,
  },
-
-  //Modal
-
-  /*modalContainer: {
-    height: "100%",//height, 
-    width: "100%", //width,
-    backgroundColor: "#fff",
-    justifyContent: "center",
-    alignItems: "center",
-  }*/
-  
 });
+
+		            /*
+                              categories.length && (
+                                <View style={{width: "100%", flexDirection: "row", justifyContent: "center"}}>
+				  { category !== "Add" ? (<View style={styles.inputContainer}>
+							{Platform.OS !== "ios" ? (
+								<Picker selectedValue={category} style={styles.pickerStyle} onValueChange={itemValue => this.setState({category: itemValue})}>
+									<Picker.Item value="" label="Please pick a category"/>
+
+		                                                        {
+									 pickerOptions
+		                                                        }
+									<Picker.Item label="Add new category ..." value="Add" />
+
+								</Picker> ) : (
+								<TouchableOpacity onPress={()=> this.setState({displayPickerModal: true})}>
+								  <Text> {category.length ? category: "Set Category:"}</Text>
+								</TouchableOpacity> 
+							)}
+						</View>) :(
+							<View style={[styles.inputContainer, {flexDirection: "column"}]}>
+								<TextInput
+							    	  style={styles.textInput} 
+								  placeholder={"Please add a new category"}
+								  onBlur={e => this.setState({
+								    newCategory: e.target.value,
+		                                                    displayConfirmCategoryAdd: true
+		                                                  })}
+								/>
+		                                                
+							</View> 
+		                                )}
+                                       </View>
+				    )
+
+
+				{
+				Platform.OS ==="ios" && displayPickerModal && (
+					<Modal visible={displayPickerModal} style={styles.pickerModalContainer}>
+						<View style={styles.pickerModalContentContainer}>
+							<Picker selectedValue={category} style={styles.pickerStyle} onValueChange={itemValue => this.setState({category: itemValue, displayPickerModal: false})}>
+								<Picker.Item value="" label="Please pick a category"/>
+                                                                {
+								  pickerOptions
+                                                                }
+								<Picker.Item label="Add new category ..." value="Add" />
+							</Picker>
+						</View>
+					</Modal>)
+
+				}
+*/

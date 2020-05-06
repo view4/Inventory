@@ -38,15 +38,18 @@ const styles= StyleSheet.create({
     alignItems: "center",
     position: "absolute",
     top: 0,
+    left: 0,
     flex: 1,
-    display: "flex"
+    display: "flex", 
+    zIndex: 90
   },
 
   modalBackground: {
     height: height,
     width: width,
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
+    zIndex: 90
   },
 
   modalContent: {
