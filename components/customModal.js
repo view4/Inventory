@@ -31,21 +31,15 @@ const CustomModal = ({visible, text, buttonText, buttonFunctionality, customButt
 
 const styles= StyleSheet.create({
   modalContainer: {
-    height: height, 
+    /*height: height,
     width: width,
-    backgroundColor: "#bababa6e",
-    justifyContent: "center",
     alignItems: "center",
-    position: "absolute",
-    top: 0,
-    left: 0,
-    flex: 1,
-    display: "flex", 
-    zIndex: 90
+    justifyContent: "center"*/
   },
 
   modalBackground: {
     height: height,
+    backgroundColor: "rgba(180, 180, 180, 0.18)",
     width: width,
     justifyContent: "center",
     alignItems: "center",
@@ -53,29 +47,25 @@ const styles= StyleSheet.create({
   },
 
   modalContent: {
-    height: height/2,
+    height: height/ 3,
     width: width /2,
-    //marginTop: 54,
     backgroundColor: "#fff",
     borderRadius: 7,
-    padding: 18,
+    padding: 36,
     justifyContent: "center",
     alignItems: "center",
     borderWidth: 1,
     borderColor: "grey",
-    //marginRight: "auto",
-    //marginLeft: "auto"
   },
 
   buttonContainer: {
 	marginTop: 7,
 	alignItems: "center",
-	width: "90%",
   },
   
   buttonStyle: {
 	borderRadius: 18,
-	width: "90%",
+	width: 180,
 	height: 36,
 	padding: 3,
 	borderWidth: 1,

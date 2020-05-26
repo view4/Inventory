@@ -1,6 +1,6 @@
 import * as Print from 'expo-print';
 import * as React from 'react';
-import { Button, StyleSheet, View } from 'react-native';
+import { Button, StyleSheet, View, ActivityIndicator } from 'react-native';
 
 import firebase from "../firebase";
 
@@ -12,9 +12,9 @@ const htmlStyle=
 			display: flex;
 			border-bottom: 1px solid gray;
 			width: 90%;
-			margin: 0px 54px 10px 54px;;
+			margin: 0px 36px 7px 36px;;
 			justify-content: flex-start;
-			padding-bottom: 7px;
+			padding-bottom: 3px;
 			position: relative;
 			height: 18vh;
 		}
@@ -51,23 +51,25 @@ const htmlStyle=
 			height: 100vh;
 			display: flex;
 			flex-direction: column; 
-			justify-content: space-around;
+			justify-content: flex-start;
 		}
 	</style>`;
 
 class DownloadItemsScreen extends React.Component{
   state={
-    allItems: []
+    allItems: [],
+    isLoading: true
   }
 
   componentDidMount(){
     const itemsRef = firebase.database().ref("items");
     itemsRef.on("value", snapshot => {
       if(!snapshot.val()){
+        this.setState({isLoading: false})
         return;
       };
       const allItemsArray = this.convertToArray(snapshot.val());
-      this.setState({allItems: allItemsArray});
+      this.setState({allItems: allItemsArray, isLoading: false});
     })
   };
 
@@ -82,6 +84,7 @@ class DownloadItemsScreen extends React.Component{
 	 ...object[key]
      }
     ));
+    console.log(objectArray)
 
     return objectArray;
   }
@@ -109,11 +112,12 @@ class DownloadItemsScreen extends React.Component{
     let containerCounter = 0;
     for (let i = 0; i < allItems.length; i++) {
 	console.log(allItems)
-        if (containerCounter >= 3){
+        if (containerCounter > 4){
 		containerCounter = 0;
 		container = container.concat("</div>");
-		body.concat(container)
-                container = `<div class="items-page-container">`;	
+		body = body.concat(container)
+                container = `<div class="items-page-container">`;
+                console.log(container)	
 	};
 	let itemHtml = `
 		<div class="item-container">
@@ -131,6 +135,7 @@ class DownloadItemsScreen extends React.Component{
 				<span>Quantity:${allItems[i].quantity}  </span>
 			</div>
 		</div>`
+        containerCounter ++;
 	container = container.concat(itemHtml);
 	
 	//body = body.concat(itemHtml);
@@ -144,14 +149,27 @@ class DownloadItemsScreen extends React.Component{
 			${style}
 			${body}
 		</html>`;
-   console.log(doc)
+   //console.log(doc)
+
    return doc
   }
 
   render(){
+    const { isLoading } = this.state;
 	return (
 	  <View style={styles.container}>
-		<Button style={styles.downloadButton} title="Press to download" onPress={this.setState({download: true})/*this.handleDownload*/}></Button>
+		{isLoading ? <ActivityIndicator size="large" color="navy" animating={isLoading}/> : (
+                  <Button 
+                    style={styles.downloadButton} 
+                    title="Press to download" 
+                    onPress={
+                      () => {
+                        this.setState({isLoading: true})
+                        this.handleDownload().then(() => this.setState({isLoading: false }))
+                      }
+                    }>
+                  </Button>
+                )}
 	  </View>
    )
  }

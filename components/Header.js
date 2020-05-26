@@ -33,11 +33,7 @@ const Header = ({headerText, leftSectText, leftSectFunctionality, rightSectText,
 
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'aliceblue',
-    alignItems: "center"
-  },
+
   headerContainer: {
     backgroundColor: colors.theme,
     flexDirection: "row",

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Dimensions, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View, Image } from 'react-native';
+import { Dimensions, FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View, Image, ActivityIndicator } from 'react-native';
 
 import { ScrollView } from 'react-native-gesture-handler';
 
@@ -22,18 +22,38 @@ export default class HomeScreen extends React.Component{
     isSearch: false,
     hasFilters: false,
     filters: [],
+    categories: [],
+    isLoading: true
   };
 
   componentDidMount(){
     const itemsRef = firebase.database().ref("items");
     itemsRef.on("value", snapshot => {
       if(!snapshot.val()){
+        this.setState({isLoading: false})
         return;
       };
       const allItemsArray = this.convertToArray(snapshot.val());
-      this.setState({allItems: allItemsArray});
+      this.setState({allItems: allItemsArray, isLoading: false});
     })
+    this.setCategories()
   };
+
+  setCategories = () => {
+    this.skuRef = firebase.database().ref("categories");
+
+    this.skuRef.on("value", snapshot => {
+      if(!snapshot.val()){
+        return;
+      };
+      console.log(snapshot.val())
+      this.setState({
+        categories: Object.values(snapshot.val())
+      });
+    })
+    console.log("Cate from mount")
+    console.log(this.state.categories)
+  }
 
 
   convertToArray = (object) => {
@@ -97,8 +117,7 @@ export default class HomeScreen extends React.Component{
     })
   }
   render() {
-    const { allItems, isSearch, filteredItems, hasFilters, filters } = this.state;
-    const categories = ["Rings", "Necklaces", "Earrings", "Bracelets"];
+    const { allItems, isSearch, filteredItems, hasFilters, filters, categories, isLoading } = this.state;
 
     return(
       <View style={styles.container}>
@@ -128,7 +147,8 @@ export default class HomeScreen extends React.Component{
 	  </View>
 	 </View>
 	 <View style={[styles.bottomRowContainer, styles.headerRow]}>
-	   {
+           <ScrollView horizontal={true}>
+	     {
 		categories.map(category => (
 			<TouchableOpacity 
 			  style={[styles.categoryButton, filters.indexOf(category) !== -1 ? styles.selectedFilterItem: null]}
@@ -138,10 +158,13 @@ export default class HomeScreen extends React.Component{
 				<Text style={styles.headerText}>{category}</Text>
 			</TouchableOpacity>
 		))
-	   }
+	     }
+           </ScrollView>
 	   
 	 </View>
 	</View>
+
+        <ActivityIndicator size="large" color="navy" animating={isLoading}/>
 
         <ScrollView style={styles.catalogueContainer} contentContainerStyle={styles.catalogueContentContainer}>
 	  <FlatList
@@ -213,9 +236,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.subtleGrey,
     padding: 7,
     borderRadius: 7,
-    width: (width / 4) - 7,
+    minWidth: (width / 4) - 7,
     flexDirection: "row",
-    justifyContent: "center"
+    justifyContent: "center", 
+    marginRight: 7,
+    marginLeft: 7
     //textAlign: "center"
 
   },

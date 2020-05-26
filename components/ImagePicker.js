@@ -1,6 +1,8 @@
 import React, {useState} from "react";
 import { Dimensions, Image, Modal, Picker, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Platform } from "react-native";
 
+
+
 const MyImagePicker = ({image, _pickImage, _takeImage, getPermissions, getCameraPermissions, setDisplayCameraOptions}) => {
 
   return(
@@ -33,7 +35,6 @@ const styles = StyleSheet.create({
   // Image 
   addImageContainer: {
     padding: 10, 
-    position: "static"
   },
   imageContainer: {
     backgroundColor: "#000",
@@ -42,7 +43,6 @@ const styles = StyleSheet.create({
   imageIcon: {
     height: 100,
     width: 100,
-    opacity: 1,
     backgroundColor: "rgb(240, 248, 255)",
   },
 

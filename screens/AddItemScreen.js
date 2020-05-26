@@ -1,14 +1,17 @@
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from 'expo-permissions';
+import Constants from 'expo-constants';
 import * as React from 'react';
-import { Dimensions, Image, Modal, Picker, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Platform } from "react-native";
+import { Dimensions, Image, Modal, Picker, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Platform, ActivityIndicator } from "react-native";
 
 import CustomModal from "../components/customModal";
 import Header from "../components/Header";
 import MyImagePicker from "../components/ImagePicker";
+import DropDownSelect from "../components/DropDownSelect";
 
 import firebase from "../firebase";
 import colors from "../constants/Colors";
+
 
 const {height, width} = Dimensions.get("screen");
 
@@ -34,7 +37,8 @@ class AddOrEditItemScreen extends React.Component{
     displayConfirmationModal: false,
     displayCameraOptions: false,
     displayConfirmCategoryAdd: false,
-    newCategory: ""
+    newCategory: "",
+    isLoading: true
   };
 
 
@@ -46,24 +50,22 @@ class AddOrEditItemScreen extends React.Component{
     base64: true
   }
 
-  componentWillMount() {
-    this.setCategories()
-    
-  }
-
   setCategories = () => {
-    this.skuRef = firebase.database().ref("categories");
+    const categoriesRef = firebase.database().ref("categories");
 
-    this.skuRef.on("value", snapshot => {
+    categoriesRef.on("value", snapshot => {
       if(!snapshot.val()){
+        this.setState({isLoading: false})
         return;
       };
       console.log(snapshot.val())
       this.setState({
-        categories: Object.values(snapshot.val())
+        categories: Object.values(snapshot.val()),
+        isLoading: false
       });
     })
-    console.log("Cate from mount")
+
+    console.log("Cate from")
     console.log(this.state.categories)
   }
   componentDidMount() {
@@ -85,6 +87,7 @@ class AddOrEditItemScreen extends React.Component{
     }
 
     this.setSku()
+    this.setCategories()
   }
 
   setSku = () => {
@@ -181,23 +184,36 @@ class AddOrEditItemScreen extends React.Component{
      };
      if (!isEdit) {
        itemsRef.push(newItemObject);
+       this.skuRef.set(sku);
      } else {
  	itemsRef.child(existingKey).set(newItemObject);
      }
      this.setState({displayConfirmationModal: true});
-     this.skuRef.set(sku);
+     this.resetState()
     
   }
 
   resetState = () => {
 	this.setState({
-	  image: null,
-	  title: "",
-	  description: "", 
-	  category: "",
-	  quantity: "1",
-	  costPrice: "",
-	  salePrice: ""
+		image: null,
+		title: '',
+		description: '',
+		category: '',
+		quantity: '1',
+		costPrice: '',
+		salePrice: '',
+		material: "",
+		dimensions: "",
+		sku: this.state.sku + 1,
+		displayErrorMessage: false,
+		isEdit: false,
+		existingKey: "",
+		displayPickerModal: false,
+		errorText: "",
+		displayConfirmationModal: false,
+		displayCameraOptions: false,
+		displayConfirmCategoryAdd: false,
+		newCategory: ""
 	});
   };
 
@@ -212,15 +228,14 @@ class AddOrEditItemScreen extends React.Component{
 
   handleNewCategoryAddition = () => {
 
-    const {newCategory, categories } = this.state;
+    const { newCategory, categories } = this.state;
 
 
     const categoriesRef = firebase.database().ref("categories");
-    const newCategoriesArray = categories.push(newCategory);
-    categoriesRef.set(newCategoriesArray);
-    console.log(newCategoriesArray)
+    categories.push(newCategory);
+    categoriesRef.set(categories);
 
-    this.setState({categories, displayConfirmCategoryAdd: false})
+    this.setState({categories, displayConfirmCategoryAdd: false, category: newCategory})
     return alert("New category added successfully")
 
 
@@ -228,24 +243,20 @@ class AddOrEditItemScreen extends React.Component{
   };
  
 	render(){
-		const { displayConfirmationModal, displayPickerModal, image, displayErrorMessage, isEdit, title, description, quantity, costPrice, salePrice, category, errorText, displayCameraOptions, material, dimensions, sku, displayConfirmCategoryAdd, newCategory, categories } = this.state;
+		const { displayConfirmationModal, displayPickerModal, image, displayErrorMessage, isEdit, title, description, quantity, costPrice, salePrice, category, errorText, displayCameraOptions, material, dimensions, sku, displayConfirmCategoryAdd, newCategory, categories, isLoading } = this.state;
 		console.log(this.state)
 
-                let pickerOptions =  categories.map( (cat, key) => {
-		  return <Picker.Item label={cat} value={cat} key={key} />
-                });
-                console.log(pickerOptions)
 		return(
 			<View style={styles.container}>
                           <Header 
                             headerText={(isEdit ? "Edit" : "Add") + " item" }
-                            leftSectText={"cancel"}
+                            leftSectText={"Cancel"}
                             leftSectFunctionality={() => {
 		              this.resetState()
 		              this.props.navigation.goBack()
                               }
                             }
-                            rightSectText={"done"}
+                            rightSectText={"Done"}
                             rightSectFunctionality={this.addItem}
                           />
 
@@ -253,7 +264,11 @@ class AddOrEditItemScreen extends React.Component{
 	                    <Text style={styles.skuText}>SKU: #{sku}</Text>
 	                  </View>
 
-	                  <ScrollView contentContainerStyle={styles.scrollContainer}>
+                          <ActivityIndicator size="large" color="navy" animating={isLoading}/>
+
+	                  {!isLoading && (<ScrollView contentContainerStyle={styles.scrollContainer}>
+
+
                             <MyImagePicker
                               image={image} 
                               setDisplayCameraOptions={() => this.setState({displayCameraOptions: true})}
@@ -276,6 +291,19 @@ class AddOrEditItemScreen extends React.Component{
 				value={material}
 		              />
 			    </View>
+			    <View style={styles.inputContainer}>
+			    <DropDownSelect 
+                              label={"Categories ..."} 
+                              options={categories}
+                              onNewAddition={
+                                (option) => this.setState({
+			          newCategory: option,
+		                  displayConfirmCategoryAdd: true
+		                })
+                              }
+                              handleSelect={(category) => this.setState({category})}
+                            />
+                            </View>
 			    <View style={styles.inputContainer}>
 			      <TextInput
 			        style={styles.textInput} 
@@ -312,9 +340,8 @@ class AddOrEditItemScreen extends React.Component{
 				</View>
 			      </View>
 			      <View style={styles.markupContainer}>
-				<Text style={styles.markupText}> Markup </Text>
-				<Text> + </Text>
-                                <Text> 
+				<Text style={styles.markupText}> 
+                                  Markup =  
                                   { salePrice && costPrice && ((salePrice-costPrice)/costPrice) * 100}
                                   %
                                 </Text>
@@ -328,7 +355,9 @@ class AddOrEditItemScreen extends React.Component{
 			        value={description}
 			      />
 			    </View>
-			  </ScrollView>
+			  </ScrollView> 
+                        )}
+
 			{displayErrorMessage && (
 				<CustomModal
 				  visible={displayErrorMessage} 
@@ -399,6 +428,11 @@ export default AddOrEditItemScreen;
 
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'aliceblue',
+    alignItems: "center"
+  },
 
   // SKU container
 
@@ -417,8 +451,7 @@ const styles = StyleSheet.create({
     width: width,
     justifyContent: "center",
     alignItems: "center", 
-    marginTop: 10, 
-    position: "static"
+    marginTop: 10
   },
   
   inputContainer: {
@@ -435,8 +468,8 @@ const styles = StyleSheet.create({
   pickerStyle: {
     height: 36,
     width: "100%",
-	justifyContent: "center",
-	backgroundColor: "#9e9e9e4d"
+    justifyContent: "center",
+    backgroundColor: "#9e9e9e4d"
   },
   //Price input sect
 
@@ -450,6 +483,10 @@ const styles = StyleSheet.create({
     width: width / 2
   },
 
+  markupContainer: {
+    height: "100%",
+    justifyContent: "center"
+  },
 
   pickerModalContainer: {
     height: height,
@@ -468,55 +505,3 @@ const styles = StyleSheet.create({
    borderRadius: 18,
  },
 });
-
-		            /*
-                              categories.length && (
-                                <View style={{width: "100%", flexDirection: "row", justifyContent: "center"}}>
-				  { category !== "Add" ? (<View style={styles.inputContainer}>
-							{Platform.OS !== "ios" ? (
-								<Picker selectedValue={category} style={styles.pickerStyle} onValueChange={itemValue => this.setState({category: itemValue})}>
-									<Picker.Item value="" label="Please pick a category"/>
-
-		                                                        {
-									 pickerOptions
-		                                                        }
-									<Picker.Item label="Add new category ..." value="Add" />
-
-								</Picker> ) : (
-								<TouchableOpacity onPress={()=> this.setState({displayPickerModal: true})}>
-								  <Text> {category.length ? category: "Set Category:"}</Text>
-								</TouchableOpacity> 
-							)}
-						</View>) :(
-							<View style={[styles.inputContainer, {flexDirection: "column"}]}>
-								<TextInput
-							    	  style={styles.textInput} 
-								  placeholder={"Please add a new category"}
-								  onBlur={e => this.setState({
-								    newCategory: e.target.value,
-		                                                    displayConfirmCategoryAdd: true
-		                                                  })}
-								/>
-		                                                
-							</View> 
-		                                )}
-                                       </View>
-				    )
-
-
-				{
-				Platform.OS ==="ios" && displayPickerModal && (
-					<Modal visible={displayPickerModal} style={styles.pickerModalContainer}>
-						<View style={styles.pickerModalContentContainer}>
-							<Picker selectedValue={category} style={styles.pickerStyle} onValueChange={itemValue => this.setState({category: itemValue, displayPickerModal: false})}>
-								<Picker.Item value="" label="Please pick a category"/>
-                                                                {
-								  pickerOptions
-                                                                }
-								<Picker.Item label="Add new category ..." value="Add" />
-							</Picker>
-						</View>
-					</Modal>)
-
-				}
-*/
