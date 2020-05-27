@@ -20,7 +20,10 @@ class DisplayItemScreen extends React.Component{
     displayDeleteModal: false,
     item: {
 		//image: deleteIcon	
-	}
+	},
+    //displayCostPrice: false,
+    priceClickCounter:0,
+    imageClickCounter: 0 
   };
 
   componentWillMount(){
@@ -44,8 +47,10 @@ class DisplayItemScreen extends React.Component{
   };
 
   render(){
+      const { priceClickCounter, imageClickCounter } = this.state;
       const {image, title, description, quantity, salePrice, costPrice, category, material, dimensions, sku} = this.state.item;
-    const { displayDeleteModal } = this.state;
+      const { displayDeleteModal } = this.state;
+      const isImageExpanded = imageClickCounter > 0 && (imageClickCounter % 2 === 0);
 	console.log(this.props)
 	console.log(this.state)
     return(
@@ -81,18 +86,24 @@ class DisplayItemScreen extends React.Component{
       
 	<ScrollView>
 	  <View style={styles.imageContainer}>
-	    <Image 
+            <TouchableOpacity onPress={() => this.setState({imageClickCounter: imageClickCounter + 1})}>
+	      <Image 
 		source={{uri: image}}
-		style={{height: 180, width: 180}}
-             />
+		style={ isImageExpanded ? { height: 540, width: 540 }  : {height: 180, width: 180}}
+               />
+            </TouchableOpacity>
 	  </View>
-	  <View style={styles.itemDetailsContainer}>
+        {  !isImageExpanded && 
+	  (<View style={styles.itemDetailsContainer}>
                   <Text style={styles.skuLabel}>SKU: {}</Text>
 		  <Label title={"Product Name"} text={title} />
 		  <Label title={"Product Name"} text={category} />
 		  <Label title={"Product Name"} text={material} />
 		  <Label title={"Product Name"} text={dimensions} />
-		  <Label title={"Product Name"} text={"£" + costPrice} />
+		  { priceClickCounter > 0 && (priceClickCounter % 2 == 0) && <Label title={"Product Name"} text={"£" + costPrice} /> }
+                  <TouchableOpacity onPress={ () => this.setState({priceClickCounter: priceClickCounter + 1}) }>
+                    <Label title={""} text={"£" + salePrice} / >
+                  </TouchableOpacity>
 		  <Label title={"Product Name"} text={description} />
 		  <Label title={"Product Name"} text={quantity} />
 
@@ -105,6 +116,7 @@ class DisplayItemScreen extends React.Component{
 		   </TouchableOpacity>
                  </View>
 	  </View>
+        )}
 	</ScrollView>
         {
 	  displayDeleteModal && <CustomModal 

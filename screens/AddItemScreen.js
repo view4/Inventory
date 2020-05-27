@@ -8,6 +8,7 @@ import CustomModal from "../components/customModal";
 import Header from "../components/Header";
 import MyImagePicker from "../components/ImagePicker";
 import DropDownSelect from "../components/DropDownSelect";
+import Label from "../components/Label";
 
 import firebase from "../firebase";
 import colors from "../constants/Colors";
@@ -264,7 +265,7 @@ class AddOrEditItemScreen extends React.Component{
 	                    <Text style={styles.skuText}>SKU: #{sku}</Text>
 	                  </View>
 
-                          <ActivityIndicator size="large" color="navy" animating={isLoading}/>
+                          {isLoading && <ActivityIndicator size="large" color="navy" animating={isLoading}/>}
 
 	                  {!isLoading && (<ScrollView contentContainerStyle={styles.scrollContainer}>
 
@@ -275,25 +276,26 @@ class AddOrEditItemScreen extends React.Component{
                             />
 
 			    <View style={styles.inputContainer}>
+		              <Label style={styles.labelStyle} text={"Name:"} />
 			      <TextInput 
 			        style={styles.textInput}
-		       	        placeholder={"Product Name"}
 			   	onChangeText={text => this.setState({title:text})}
 				value={title}
 			      />
 
 			    </View>
 			    <View style={styles.inputContainer}>
+		              <Label style={styles.labelStyle} text={"Material:"} />
 		              <TextInput
 			        style={styles.textInput} 
-				placeholder={"Material"}
 	   			onChangeText={text => this.setState({material:text})}
 				value={material}
 		              />
 			    </View>
 			    <View style={styles.inputContainer}>
+		              <Label style={styles.labelStyle} text={"Categories:"} />
 			    <DropDownSelect 
-                              label={"Categories ..."} 
+                              label={"Please select ..."} 
                               options={categories}
                               onNewAddition={
                                 (option) => this.setState({
@@ -305,49 +307,56 @@ class AddOrEditItemScreen extends React.Component{
                             />
                             </View>
 			    <View style={styles.inputContainer}>
+		              <Label style={styles.labelStyle} text={"Dimensions:"} />
 			      <TextInput
 			        style={styles.textInput} 
-			        placeholder={"Dimensions"}
 			  	onChangeText={text => this.setState({dimensions:text})}
 		                value={dimensions}
 			      />
 		            </View>
 		            <View style={styles.inputContainer}>
+		              <Label text={"Quantity:"} style={styles.labelStyle} />
 			      <TextInput
 			        style={styles.textInput} 
-				placeholder={"Quantity"}
 			   	onChangeText={text => this.setState({quantity:text})}
 				value={quantity}
 			      />
 			    </View>
+
                             <View style={styles.pricesContainer}>
 			      <View>
+		                <Label style={styles.labelStyle}text={"Price:"} />
 				<View style={[styles.inputContainer, styles.priceInput]}>
+                                  <Text>£ </Text>
 				  <TextInput 
 				    style={styles.textInput} 
-				    placeholder={"Cost Price"} 
+				    placeholder={"Cost"} 
 				    onChangeText={text => this.setState({costPrice:text})}
 				    value={costPrice}
 				  />
 				</View>
 				<View style={[styles.inputContainer, styles.priceInput]}>
+                                  <Text>£ </Text>
 				  <TextInput 
 				    style={styles.textInput} 
-				    placeholder={"Selling Price"} 
+				    placeholder={"Sale"} 
 				    onChangeText={text => this.setState({salePrice:text})}
 				    value={salePrice}
 				  />
 				</View>
 			      </View>
-			      <View style={styles.markupContainer}>
-				<Text style={styles.markupText}> 
-                                  Markup =  
-                                  { salePrice && costPrice && ((salePrice-costPrice)/costPrice) * 100}
-                                  %
-                                </Text>
+                              <View style={styles.markupContainer}>
+				  <Text style={styles.markupText}> 
+                                    Markup =  
+                                      { costPrice && salePrice &&
+                                        Math.round(((salePrice-costPrice)/costPrice) * 100)
+                                      }
+                                    %
+                                  </Text>
 			      </View>
 			    </View>
 			    <View style={styles.inputContainer}>
+		              <Label style={styles.labelStyle} text={"Description:"} />
 			      <TextInput
 			        style={styles.textInput} 
 				placeholder={"History/Notes"}
@@ -441,7 +450,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "flex-end",
     height: 36,
-    paddingRight: 10
+    paddingRight: 10,
+    marginTop: -10,
+    background: "transparent"
   },
 
 
@@ -451,7 +462,7 @@ const styles = StyleSheet.create({
     width: width,
     justifyContent: "center",
     alignItems: "center", 
-    marginTop: 10
+    //marginTop: 10,
   },
   
   inputContainer: {
@@ -476,16 +487,20 @@ const styles = StyleSheet.create({
   pricesContainer: {
     flexDirection: "row",
     width: "72%",
-    paddingLeft: 0
+    paddingLeft: 0,
+    //height: 360,
   },
 
   priceInput: {
-    width: width / 2
+    width: width / 2,
+    flexDirection: "row"
   },
 
   markupContainer: {
-    height: "100%",
-    justifyContent: "center"
+    //height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    marginLeft: 36
   },
 
   pickerModalContainer: {
@@ -504,4 +519,11 @@ const styles = StyleSheet.create({
    borderWidth: 1,
    borderRadius: 18,
  },
+
+
+  //Label style 
+
+  labelStyle: {
+    padding: 0, 
+  }
 });

@@ -129,7 +129,7 @@ export default class HomeScreen extends React.Component{
 	  <View style={styles.searchContainer}>
 	    <View style={styles.searchIconContainer}>
 		<Image 
-                   source={require("../assets/images/search_icon.svg")}
+                   source={require("../assets/images/search_icon.png")}
                    style={styles.searchIcon}
                  />
 	    </View>
@@ -273,8 +273,8 @@ const styles = StyleSheet.create({
   },
 
   searchIcon: {
-    height: 10,
-    width: 10,
+    height: 18,
+    width: 18,
   },
 
 

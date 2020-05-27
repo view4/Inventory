@@ -1,9 +1,12 @@
 import * as React from 'react';
-import {View, Image, StyleSheet} from "react-native";
+import {View, Image, StyleSheet, TouchableOpacity, Text } from "react-native";
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 //import {  createAppContainer } from "@react-navigation"
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
+import NavigationTab from "./NavigationTab";
+
 import HomeScreen from '../screens/HomeScreen';
 import AddOrEditItemScreen from '../screens/AddItemScreen';
 import DisplayItemScreen from '../screens/displayItemScreen';
@@ -37,9 +40,14 @@ export default function BottomTabNavigator({ navigation, route }) {
         component={AddOrEditItemScreen}
         style={styles.tab}
         options={{
-          title: 'Add new Item',
-	  labelPosition: "below-icon",
-	  tabBarIcon: ({focused}) => <Image source={focused ? activePlus : inactivePlus} style={{height: 18, width: 18}}/>,
+          //title: 'Add new Item',
+	  //labelPosition: "below-icon",
+	  tabBarButton: props => (
+            <TouchableOpacity style={{height: "100%"}} onPress={props.onPress}>
+              <NavigationTab isActive={props.accessibilityStates[0] === "selected" } label={"Add Item"} icon={props.accessibilityStates[0] === "selected" ? activePlus: inactivePlus} {...props}/>
+            </TouchableOpacity> 
+          ),
+	  //tabBarIcon: ({focused}) => <Image source={focused ? activePlus : inactivePlus} style={{height: 18, width: 18}}/>,
           style: styles.tab
         }}
       />
@@ -47,9 +55,14 @@ export default function BottomTabNavigator({ navigation, route }) {
         name="Home"
         component={HomeScreen}
         options={{
-          title: 'Catalogue',
-	  labelPosition: "below-icon",
-	  tabBarIcon: ({focused}) => <Image source={focused ? activeHome : inactiveHome} style={{height: 18, width: 18}}/>
+          //title: 'Catalogue',
+	  //labelPosition: "below-icon",
+	  tabBarButton: props => (
+            <TouchableOpacity style={{height: "100%"}} onPress={props.onPress}>
+              <NavigationTab isActive={props.accessibilityStates[0] === "selected" } label={"Home"} icon={props.accessibilityStates[0] === "selected" ? activeHome: inactiveHome} {...props}/>
+            </TouchableOpacity> 
+          ),
+	  //tabBarIcon: ({focused}) => <Image source={focused ? activeHome : inactiveHome} style={{height: 18, width: 18}}/>
         }}
       />
       <BottomTab.Screen
@@ -58,6 +71,11 @@ export default function BottomTabNavigator({ navigation, route }) {
         options={{
           title: 'Export Items',
 	  labelPosition: "below-icon",
+	  tabBarButton: props => (
+            <TouchableOpacity style={{height: "100%"}}onPress={props.onPress}>
+              <NavigationTab isActive={props.accessibilityStates[0] === "selected" } label={"Print/Export"} icon={props.accessibilityStates[0] === "selected" ? activePrint: inactivePrint} {...props}/>
+            </TouchableOpacity> 
+          ),
 	  tabBarIcon: ({focused}) => <Image source={focused ? activePrint : inactivePrint} style={{height: 18, width: 18}}/>
         }}
       />

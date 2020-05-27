@@ -2,10 +2,10 @@ import React from "react";
 import { StyleSheet, Text, View } from 'react-native';
 
 
-const Label = ({title, text}) => {
-
+const Label = ({title, text, style}) => {
+  console.log("style", style)
   return (
-    <View style={styles.container}>
+    <View style={style || styles.container}>
       {/*<Text style={styles.title}>
 	{title}:
       </Text>*/}
@@ -26,7 +26,6 @@ const styles = StyleSheet.create({
   },
 
   labelText: {
-    frontSize: 18,
     fontWeight: "700"
   }
   
