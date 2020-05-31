@@ -6,9 +6,11 @@ const Label = ({title, text, style}) => {
   console.log("style", style)
   return (
     <View style={style || styles.container}>
-      {/*<Text style={styles.title}>
+     { title && (
+       <Text style={styles.title}>
 	{title}:
-      </Text>*/}
+       </Text>
+     )}
       <Text style={styles.labelText}>
         {text}
       </Text>
@@ -23,6 +25,9 @@ const styles = StyleSheet.create({
     padding: 10,
     width: "90%",
     backgroundColor: "#fff"
+  },
+  title: {
+    fontSize: 18
   },
 
   labelText: {

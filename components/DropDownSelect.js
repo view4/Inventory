@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Dimensions, Image, Modal, Picker, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Platform } from "react-native";
 
-const DropDownSelect = ({label, options, handleSelect, onNewAddition}) => {
+const DropDownSelect = ({label, options, handleSelect, onNewAddition, value}) => {
+  console.log("VVVVVVVVV", value)
   const [ isOpen, setIsOpen ] = useState(false);
   const [ addNew, setAddNew ] = useState(false);
   const [ selectedValue, setSelectedValue ] = useState("");
@@ -41,7 +42,7 @@ const DropDownSelect = ({label, options, handleSelect, onNewAddition}) => {
          ) : (
            <View style={styles.dropDownContainer}>
              <TouchableOpacity style={styles.toggleDisplayContainer} onPress={() => setIsOpen(!isOpen)}> 
-              <Text>{selectedValue.length ? selectedValue : label}</Text>
+              <Text>{value && value.length ? value : label }</Text>
               <Image style={styles.toggleIcon} source={toggleLogo} />
              </TouchableOpacity>
              { isOpen &&  (  

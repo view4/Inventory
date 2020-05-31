@@ -6,9 +6,7 @@ const {height, width} = Dimensions.get("screen");
 
 
 const NavigationTab = ({isActive, label,  icon,}) => {
-  console.log("**********")
-  //console.log(props)
-  //props.onPress();
+
   return(
 	<View style={[styles.tabContainer, isActive ? styles.activeTabContainer: null ]}>
           <View style={styles.innerContainer}>

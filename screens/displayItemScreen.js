@@ -31,7 +31,7 @@ class DisplayItemScreen extends React.Component{
     
   }
   componentDidUpdate(prevProps){
-    if(prevProps.route.params.item.key !== this.props.route.params.item.key){
+    if((prevProps.route.params.item.key !== this.props.route.params.item.key) || (prevProps.route.params.item.title !== this.props.route.params.item.title)){
       this.setState({item: this.props.route.params.item});
     }
   }
@@ -51,68 +51,55 @@ class DisplayItemScreen extends React.Component{
       const {image, title, description, quantity, salePrice, costPrice, category, material, dimensions, sku} = this.state.item;
       const { displayDeleteModal } = this.state;
       const isImageExpanded = imageClickCounter > 0 && (imageClickCounter % 2 === 0);
-	console.log(this.props)
-	console.log(this.state)
     return(
       <View style={styles.container}>
         <View style={styles.backContainer}>
 	  <TouchableOpacity
-	    style={{flexDirection: "row"}}
+	    style={{flexDirection: "row", alignItems: "center", margin: 10}}
 	    onPress={() => this.props.navigation.goBack()} 
           >
 	    <Image 
- 	      source={require("../assets/images/back.svg")}
+ 	      source={require("../assets/images/back.png")}
               style={styles.backIcon}
             />
 	    <Text style={styles.headerText}>Back</Text>
           </TouchableOpacity>
 
         </View>
-        {/*<View style={styles.headerContainer}>
-	  <View style={styles.logoContainer}>
-
-	  </View>
-	  <View style={styles.searchContainer}>
-
-	  </View>
-	  <View style={styles.addItemButton}>
-	    <TouchableOpacity
-	      style={styles.headerButton}
-	      onPress={()=> this.props.navigation.navigate("edit item", {isEdit: true, item: this.state.item})}> 
-	      <Text style={styles.headerText}>Edit</Text>
-	    </TouchableOpacity> 
-	  </View>
-	 </View>*/}
       
 	<ScrollView>
 	  <View style={styles.imageContainer}>
-            <TouchableOpacity onPress={() => this.setState({imageClickCounter: imageClickCounter + 1})}>
-	      <Image 
-		source={{uri: image}}
-		style={ isImageExpanded ? { height: 540, width: 540 }  : {height: 180, width: 180}}
-               />
-            </TouchableOpacity>
+            <ScrollView contentContainerStyle={{margin: "auto", flexDirection: "row", justifyContent: "center"}} minimumZoomScale={1} maximumZoomScale={5} >
+              <TouchableOpacity onPress={() => this.setState({imageClickCounter: imageClickCounter + 1})}>
+	        <Image 
+		  source={{uri: image}}
+		  style={ isImageExpanded ? { height: 540, width: 540 }  : {height: 180, width: 180}}
+                 />
+              </TouchableOpacity>
+            </ScrollView>
 	  </View>
         {  !isImageExpanded && 
 	  (<View style={styles.itemDetailsContainer}>
-                  <Text style={styles.skuLabel}>SKU: {}</Text>
+                  <Text style={styles.skuLabel}>SKU: {sku}</Text>
 		  <Label title={"Product Name"} text={title} />
-		  <Label title={"Product Name"} text={category} />
-		  <Label title={"Product Name"} text={material} />
-		  <Label title={"Product Name"} text={dimensions} />
-		  { priceClickCounter > 0 && (priceClickCounter % 2 == 0) && <Label title={"Product Name"} text={"£" + costPrice} /> }
-                  <TouchableOpacity onPress={ () => this.setState({priceClickCounter: priceClickCounter + 1}) }>
-                    <Label title={""} text={"£" + salePrice} / >
+		  <Label title={"Category"} text={category} />
+		  <Label title={"Material"} text={material} />
+		  <Label title={"Dimensions"} text={dimensions} />
+		  { priceClickCounter > 0 && (priceClickCounter % 2 == 0) && <Label title={"Cost"} text={"£" + costPrice} /> }
+                  <TouchableOpacity style={{width: "90%"}} onPress={ () => this.setState({priceClickCounter: priceClickCounter + 1}) }>
+                    <Label title={"Selling Price"} text={"£" + salePrice} / >
                   </TouchableOpacity>
-		  <Label title={"Product Name"} text={description} />
-		  <Label title={"Product Name"} text={quantity} />
+		  <Label title={"Description"} text={description} />
+		  <Label title={"Quantity"} text={quantity} />
 
-                 <View style={{flexDirection: "row"}}>
-		   <TouchableOpacity onPress={() => this.setState({displayDeleteModal: true})}>
+                 <View style={styles.buttonsContainer}>
+		   <TouchableOpacity style={[styles.buttonContainer, styles.deleteButton]} onPress={() => this.setState({displayDeleteModal: true})}>
 		    <Image source={deleteIcon} style={{height: 36, width: 36}}/>
+                    <Text style={{color: "red"}}> Delete </Text>
 		   </TouchableOpacity>
-		   <TouchableOpacity onPress={()=> this.props.navigation.navigate("edit item", {isEdit: true, item: this.state.item})}>
+		   <TouchableOpacity style={[styles.buttonContainer]} onPress={()=> this.props.navigation.navigate("edit item", {isEdit: true, item: this.state.item})}>
 		    <Image source={editIcon} style={{height: 18, width: 18}}/>
+                    <Text> Edit </Text>
 		   </TouchableOpacity>
                  </View>
 	  </View>
@@ -160,8 +147,8 @@ const styles = StyleSheet.create({
   backIcon: {
     //opacity: 1,
     backgroundColor: "aliceblue",
-    height: 7,
-    width: 7
+    height: 18,
+    width: 18
   },
 
   headerText: {
@@ -203,6 +190,29 @@ const styles = StyleSheet.create({
   },
   itemInfo: {
 
+  },
+
+  buttonsContainer: {
+    width: "90%",
+    flexDirection: "row",
+    justifyContent: "center",
+    padding: 7
+  },
+
+  buttonContainer: {
+    height: 54,
+    width: "36%",
+    borderWidth: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    margin: 7,
+    borderRadius: 7
+  },
+
+  deleteButton: {
+    borderColor: "red"
   }
+
   
 });

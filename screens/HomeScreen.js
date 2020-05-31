@@ -46,13 +46,10 @@ export default class HomeScreen extends React.Component{
       if(!snapshot.val()){
         return;
       };
-      console.log(snapshot.val())
       this.setState({
         categories: Object.values(snapshot.val())
       });
     })
-    console.log("Cate from mount")
-    console.log(this.state.categories)
   }
 
 

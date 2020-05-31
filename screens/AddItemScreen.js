@@ -72,7 +72,7 @@ class AddOrEditItemScreen extends React.Component{
   componentDidMount() {
 
     if(this.props.isEdit) {
-      const { image, title, description, category, quantity, costPrice, salePrice, key } = this.props.item;
+      const { image, title, description, category, quantity, costPrice, salePrice, key, dimensions, sku, material } = this.props.item;
 
       this.setState({
 	image, 
@@ -84,14 +84,45 @@ class AddOrEditItemScreen extends React.Component{
 	salePrice,
 	isEdit: true,
 	existingKey: key,
+        sku, 
+        dimensions, 
+        material
 	})
+    } else {
+      this.setSku()
     }
-
-    this.setSku()
+   
     this.setCategories()
   }
 
+  componentDidUpdate(prevProps) {
+    if(this.props.isEdit && ((prevProps.item.key !== this.props.item.key) || (prevProps.item.title !== this.props.item.title))) {
+      const { image, title, description, category, quantity, costPrice, salePrice, key, dimensions, sku, material } = this.props.item;
+
+      this.setState({
+	image, 
+	title,
+	description,
+	category,
+	quantity,
+	costPrice,
+	salePrice,
+	isEdit: true,
+	existingKey: key,
+        sku, 
+        dimensions, 
+        material
+	})
+    }
+
+  }
+
   setSku = () => {
+    if(this.state.isEdit && this.state.sku) {
+      console.log("sku set")
+      return;
+      
+    }
     this.skuRef = firebase.database().ref("sku");
 
     this.skuRef.on("value", snapshot => {
@@ -162,7 +193,7 @@ class AddOrEditItemScreen extends React.Component{
     const itemsRef = firebase.database().ref("items");
     console.log(this.state)
 
-   if(title === "" || description === ""  || category === "" || quantity === "" || costPrice === "" || salePrice === "" ){
+   if(quantity === ""|| category === "" || quantity === "" || costPrice === "" || salePrice === "" || material === "" || image == null){
      this.setState({errorText:"Please complete all fields" ,displayErrorMessage: true});
      return;
    }
@@ -187,6 +218,8 @@ class AddOrEditItemScreen extends React.Component{
        itemsRef.push(newItemObject);
        this.skuRef.set(sku);
      } else {
+        console.log(newItemObject);
+        console.log(existingKey)
  	itemsRef.child(existingKey).set(newItemObject);
      }
      this.setState({displayConfirmationModal: true});
@@ -207,11 +240,11 @@ class AddOrEditItemScreen extends React.Component{
 		dimensions: "",
 		sku: this.state.sku + 1,
 		displayErrorMessage: false,
-		isEdit: false,
+		//isEdit: false,
 		existingKey: "",
 		displayPickerModal: false,
 		errorText: "",
-		displayConfirmationModal: false,
+		//displayConfirmationModal: false,
 		displayCameraOptions: false,
 		displayConfirmCategoryAdd: false,
 		newCategory: ""
@@ -221,7 +254,7 @@ class AddOrEditItemScreen extends React.Component{
   navigateHome = () => {
 	console.log(this.props);
 	if(this.state.isEdit){
-          this.props.nav.navigate("Home")
+          this.props.navigation.navigate("Home")
         } else {
 	  this.props.navigation.navigate("Home");
 	}
@@ -253,7 +286,8 @@ class AddOrEditItemScreen extends React.Component{
                             headerText={(isEdit ? "Edit" : "Add") + " item" }
                             leftSectText={"Cancel"}
                             leftSectFunctionality={() => {
-		              this.resetState()
+		              //this.resetState()
+                              console.log(this.props)
 		              this.props.navigation.goBack()
                               }
                             }
@@ -304,6 +338,7 @@ class AddOrEditItemScreen extends React.Component{
 		                })
                               }
                               handleSelect={(category) => this.setState({category})}
+                              value={category}
                             />
                             </View>
 			    <View style={styles.inputContainer}>
@@ -380,9 +415,9 @@ class AddOrEditItemScreen extends React.Component{
 				<CustomModal
 				  visible={displayConfirmCategoryAdd} 
 				  text={`Are you sure you want to add ${newCategory} as a new category`}
-				  buttonText={"yes"}
+				  buttonText={"Yes"}
 				  buttonFunctionality={() => this.handleNewCategoryAddition()}
-				  secondButtonText={"cancel"}
+				  secondButtonText={"Cancel"}
 				  secondButtonFunctionality={() => this.setState({displayConfirmCategoryAdd: false})}
 				/>
 			)}
@@ -390,9 +425,9 @@ class AddOrEditItemScreen extends React.Component{
 				displayConfirmationModal && (
 				  <CustomModal
 				    visible={displayConfirmationModal}
-				    text={isEdit ? "edit is confirmed": "Item has been added"}
-				    buttonText={!isEdit ? "add another" : "okay"}
-				    secondButtonText={!isEdit ? "okay" : null}
+				    text={isEdit ? "Edit is confirmed": "Item has been added"}
+				    buttonText={!isEdit ? "Add another" : "Okay"}
+				    secondButtonText={!isEdit ? "Okay" : null}
 				    buttonFunctionality={!isEdit ? (
 					() => {
 					  this.resetState()
@@ -420,7 +455,7 @@ class AddOrEditItemScreen extends React.Component{
 			    Constants.platform.IOS ? this.getPermissionsAsync()
 			     .then(this._pickImage()) :this._pickImage()
 			  }
-			  secondButtonText={"camera"}
+			  secondButtonText={"Camera"}
 			  secondButtonFunctionality={()=> this.getCameraPermissionsAsync()
 			    .then(this._takeImage())
 			  }
@@ -493,7 +528,8 @@ const styles = StyleSheet.create({
 
   priceInput: {
     width: width / 2,
-    flexDirection: "row"
+    flexDirection: "row",
+    alignItems: "center"
   },
 
   markupContainer: {
