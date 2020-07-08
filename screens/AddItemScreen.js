@@ -127,6 +127,7 @@ class AddOrEditItemScreen extends React.Component{
 
     this.skuRef.on("value", snapshot => {
       if(!snapshot.val()){
+        this.setState({sku: 10})
         return;
       };
       console.log(snapshot.val())
@@ -487,7 +488,7 @@ const styles = StyleSheet.create({
     height: 36,
     paddingRight: 10,
     marginTop: -10,
-    background: "transparent"
+    // background: "transparent"
   },
 
 

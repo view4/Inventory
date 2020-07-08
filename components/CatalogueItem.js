@@ -52,7 +52,7 @@ const styles= StyleSheet.create({
   },
   priceText: {
     fontSize: 13,
-    fontWeight: "400 "
+    fontWeight: "400"
   },
 
 

@@ -2,21 +2,24 @@ import firebase from 'firebase';
   
 
 // Your web app's Firebase configuration
-  var firebaseConfig = {
-    apiKey: "AIzaSyDPP_RbbmSXBJZsD-3fxGsjmEAn6PmSrIs",
-    authDomain: "inventory-b0db7.firebaseapp.com",
-    databaseURL: "https://inventory-b0db7.firebaseio.com",
-    projectId: "inventory-b0db7",
-    storageBucket: "inventory-b0db7.appspot.com",
-    messagingSenderId: "431885282403",
-    appId: "1:431885282403:web:31006ccc734fe83ae15c56"
-  };
+var firebaseConfig = {
+  apiKey: "AIzaSyCbYaElkN8cy5-0gAmxFRgt7fQ5lwXSdlc",
+  authDomain: "mystock-davelop.firebaseapp.com",
+  databaseURL: "https://mystock-davelop.firebaseio.com",
+  projectId: "mystock-davelop",
+  storageBucket: "mystock-davelop.appspot.com",
+  messagingSenderId: "191945947985",
+  appId: "1:191945947985:web:543d07b1ade374f9eef170",
+  measurementId: "G-G1TEW8V30W"
+};
 
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
+// firebase.analytics();
 
-var storage = firebase.storage();
+
+//var storage = firebase.storage();
 
 export default firebase;
 
